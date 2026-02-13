@@ -79,7 +79,7 @@ class WalkingPolicyNode(Node):
         self.head_pitch_idx = self.name_to_idx["Head_Pitch"]
         self._head_target = None
 
-        self.sub_head = self.create_subscription(Twist, "/head_cmd", self._on_head_cmd, 10)
+        self.sub_head = self.create_subscription(Twist, "head_cmd", self._on_head_cmd, 10)
 
         self.q  = np.zeros(22, dtype=np.float32)
         self.qd = np.zeros(22, dtype=np.float32)
@@ -218,10 +218,10 @@ def main():
     ap.add_argument("--clip_action", type=float, default=1.0)
     ap.add_argument("--max_delta_per_step", type=float, default=0.05)
 
-    ap.add_argument("--out_topic", default="/booster/ros2_k2_joint_cmd")
-    ap.add_argument("--joint_states", default="/booster/ros2_k2_joint_states")
-    ap.add_argument("--imu", default="/booster/ros2_k2_imu")
-    ap.add_argument("--cmd_vel", default="/cmd_vel")
+    ap.add_argument("--out_topic", default="joint_cmd")
+    ap.add_argument("--joint_states", default="joint_states")
+    ap.add_argument("--imu", default="imu")
+    ap.add_argument("--cmd_vel", default="cmd_vel")
 
     args, unknown = ap.parse_known_args()
     

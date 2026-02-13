@@ -21,8 +21,8 @@ class LocoBridge(Node):
 
         self.sub = self.create_subscription(RpcReqMsg, 'LocoApiTopicReq', self.callback, 10)
         
-        self.pub = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.pub_head = self.create_publisher(Twist, '/head_cmd', 10)
+        self.pub = self.create_publisher(Twist, 'cmd_vel', 10)
+        self.pub_head = self.create_publisher(Twist, 'head_cmd', 10)
 
 
         self.kMoveApiId = 2001
