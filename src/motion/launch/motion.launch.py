@@ -5,7 +5,7 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-
+    ns = LaunchConfiguration('ns')
     model = LaunchConfiguration('model')
     device = LaunchConfiguration('device')
     rate = LaunchConfiguration('rate')
@@ -13,38 +13,22 @@ def generate_launch_description():
     max_delta = LaunchConfiguration('max_delta')
 
     return LaunchDescription([
-
+        DeclareLaunchArgument('ns', default_value='robot1'),
         DeclareLaunchArgument(
             'model',
             default_value='/home/user/booster_deploy/tasks/locomotion/models/k1_walk.pt',
             description='Path to TorchScript model'
         ),
-
-        DeclareLaunchArgument(
-            'device',
-            default_value='cpu'
-        ),
-
-        DeclareLaunchArgument(
-            'rate',
-            default_value='50.0'
-        ),
-
-        DeclareLaunchArgument(
-            'clip_action',
-            default_value='0.0'
-        ),
-
-        DeclareLaunchArgument(
-            'max_delta',
-            default_value='0.0'
-        ),
+        DeclareLaunchArgument('device', default_value='cpu'),
+        DeclareLaunchArgument('rate', default_value='50.0'),
+        DeclareLaunchArgument('clip_action', default_value='0.0'),
+        DeclareLaunchArgument('max_delta', default_value='0.0'),
 
         #  BT → cmd_vel bridge
         Node(
             package='motion',
             executable='loco_bridge',
-            name='loco_bridge',
+            namespace=ns,
             output='screen'
         ),
 
@@ -52,7 +36,7 @@ def generate_launch_description():
         Node(
             package='motion',
             executable='walking_policy_node',
-            name='walking_policy_node',
+            namespace=ns,
             output='screen',
             arguments=[
                 '--model', model,
