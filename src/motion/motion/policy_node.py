@@ -6,7 +6,8 @@ import torch
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-from sensor_msgs.msg import JointState, Imu
+from sensor_msgs.msg import JointState
+from booster_interface.msg import LowState
 
 
 DEFAULT_JOINT_NAMES = [
@@ -37,18 +38,6 @@ SCALE_BY_TYPE = {
     "Ankle_Roll":  0.166666,
 }
 
-
-def quat_to_rotmat_wxyz(qw, qx, qy, qz):
-    ww, xx, yy, zz = qw*qw, qx*qx, qy*qy, qz*qz
-    wx, wy, wz = qw*qx, qw*qy, qw*qz
-    xy, xz, yz = qx*qy, qx*qz, qy*qz
-    return np.array([
-        [ww + xx - yy - zz,     2*(xy - wz),         2*(xz + wy)],
-        [2*(xy + wz),           ww - xx + yy - zz,   2*(yz - wx)],
-        [2*(xz - wy),           2*(yz + wx),         ww - xx - yy + zz],
-    ], dtype=np.float32)
-
-
 class WalkingPolicyNode(Node):
     def __init__(self, model_path: str, device: str, rate_hz: float,
                  out_topic: str, joint_state_topic: str, imu_topic: str, cmd_vel_topic: str,
@@ -69,7 +58,7 @@ class WalkingPolicyNode(Node):
 
         self.sub_cmd = self.create_subscription(Twist, cmd_vel_topic, self._on_cmd_vel, 10)
         self.sub_js  = self.create_subscription(JointState, joint_state_topic, self._on_joint_state, 10)
-        self.sub_imu = self.create_subscription(Imu, imu_topic, self._on_imu, 10)
+        self.sub_low = self.create_subscription(LowState, imu_topic, self._on_low_state, 10)
         self.pub_cmd = self.create_publisher(JointState, out_topic, 10)
 
         self.name_to_idx = {n: i for i, n in enumerate(DEFAULT_JOINT_NAMES)}
@@ -129,15 +118,30 @@ class WalkingPolicyNode(Node):
         if self.upper_hold is None:
             self.upper_hold = self.q.copy()
 
-    def _on_imu(self, msg: Imu):
+    def _on_low_state(self, msg: LowState):
+        # gyro
         self.gyro[:] = [
-            float(msg.angular_velocity.x),
-            float(msg.angular_velocity.y),
-            float(msg.angular_velocity.z),
+            float(msg.imu_state.gyro[0]),
+            float(msg.imu_state.gyro[1]),
+            float(msg.imu_state.gyro[2]),
         ]
 
-        qw, qx, qy, qz = float(msg.orientation.w), float(msg.orientation.x), float(msg.orientation.y), float(msg.orientation.z)
-        R_wb = quat_to_rotmat_wxyz(qw, qx, qy, qz)
+        # rpy -> proj_g
+        roll  = float(msg.imu_state.rpy[0])
+        pitch = float(msg.imu_state.rpy[1])
+        yaw   = float(msg.imu_state.rpy[2])
+
+        cr, sr = np.cos(roll), np.sin(roll)
+        cp, sp = np.cos(pitch), np.sin(pitch)
+        cy, sy = np.cos(yaw), np.sin(yaw)
+
+        # R = Rz(yaw)*Ry(pitch)*Rx(roll)
+        R_wb = np.array([
+            [cy*cp, cy*sp*sr - sy*cr, cy*sp*cr + sy*sr],
+            [sy*cp, sy*sp*sr + cy*cr, sy*sp*cr - cy*sr],
+            [-sp,   cp*sr,            cp*cr],
+        ], dtype=np.float32)
+
         g_w = np.array([0.0, 0.0, -1.0], dtype=np.float32)
         self.proj_g = (R_wb.T @ g_w).astype(np.float32)
 
@@ -220,7 +224,7 @@ def main():
 
     ap.add_argument("--out_topic", default="joint_cmd")
     ap.add_argument("--joint_states", default="joint_states")
-    ap.add_argument("--imu", default="imu")
+    ap.add_argument("--imu", default="low_state")
     ap.add_argument("--cmd_vel", default="cmd_vel")
 
     args, unknown = ap.parse_known_args()
@@ -241,7 +245,7 @@ def main():
         rclpy.spin(node)
     finally:
         node.destroy_node()
-        rclpy.init(args=unknown)
+        rclpy.shutdown()
 
 
 if __name__ == "__main__":
