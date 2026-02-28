@@ -44,10 +44,10 @@ class LocoBridge(Node):
 
         self.joy_hold_sec = 0.3
 
-        # params (원하시면 파라미터로 빼셔도 됩니다)
+        # params 
         self.deadzone = 0.05
-        self.max_vx = 1.3          # m/s
-        self.max_vy = 0.5          # m/s (필요 없으면 0으로)
+        self.max_vx = 1.1         # m/s
+        self.max_vy = 1.0          # m/s 
         self.max_wz = 1.2          # rad/s
         self.max_head_pitch = 0.75 # rad
         self.min_head_pitch = -0.30 # rad
@@ -132,7 +132,7 @@ class LocoBridge(Node):
 
         a_fwd = a1 if abs(a1) > abs(a4) else a4
 
-        vx = (-a_fwd) * self.max_vx
+        vx = (a_fwd) * self.max_vx
         vy = (a0) * self.max_vy
         wz = (a3) * self.max_wz
 
@@ -157,8 +157,8 @@ class LocoBridge(Node):
         self._joy_prev_time = now
 
         # 고개 돌리는 속도
-        head_yaw_speed   = 0.2   # rad/s
-        head_pitch_speed = 0.2   # rad/s
+        head_yaw_speed   = 1.0   # rad/s
+        head_pitch_speed = 1.0   # rad/s
 
         # 누르는 동안 목표각 계속 이동
         self._last_yaw   += d_lr * head_yaw_speed * dt

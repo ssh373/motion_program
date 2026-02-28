@@ -41,10 +41,7 @@ def generate_launch_description():
             namespace=ns,
             output='screen',
             parameters=[{
-                # /dev/input/js{joy}
-                'dev': PythonExpression([
-                    "'/dev/input/js' + str(", joy, ")"
-                ]),
+                'device_id': joy,
                 'autorepeat_rate': 30.0,
                 'deadzone': 0.05,
             }],
