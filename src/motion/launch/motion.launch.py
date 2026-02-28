@@ -1,8 +1,8 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
-
+from launch.conditions import IfCondition
 
 def generate_launch_description():
     ns = LaunchConfiguration('ns')
@@ -11,6 +11,7 @@ def generate_launch_description():
     rate = LaunchConfiguration('rate')
     clip_action = LaunchConfiguration('clip_action')
     max_delta = LaunchConfiguration('max_delta')
+    joy = LaunchConfiguration('joy')
 
     return LaunchDescription([
         DeclareLaunchArgument('ns', default_value='robot1'),
@@ -23,6 +24,8 @@ def generate_launch_description():
         DeclareLaunchArgument('rate', default_value='50.0'),
         DeclareLaunchArgument('clip_action', default_value='0.0'),
         DeclareLaunchArgument('max_delta', default_value='0.0'),
+        DeclareLaunchArgument('joy', default_value='-1', 
+                              description='Joystick index (-1 means disabled)'),
 
         #  BT → cmd_vel bridge
         Node(
@@ -30,6 +33,26 @@ def generate_launch_description():
             executable='loco_bridge',
             namespace=ns,
             output='screen'
+        ),
+
+        Node(
+            package='joy',
+            executable='joy_node',
+            namespace=ns,
+            output='screen',
+            parameters=[{
+                # /dev/input/js{joy}
+                'dev': PythonExpression([
+                    "'/dev/input/js' + str(", joy, ")"
+                ]),
+                'autorepeat_rate': 30.0,
+                'deadzone': 0.05,
+            }],
+            condition=IfCondition(
+                PythonExpression([joy, ' >= 0'])
+            ),
+            respawn=True,
+            respawn_delay=2.0,
         ),
 
         # Walking policy node
