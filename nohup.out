@@ -1,0 +1,21 @@
+[INFO] [launch]: All log files can be found below /home/user/.ros/log/2026-03-08-15-59-56-556534-user-System-Product-Name-15759
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [launch]: All log files can be found below /home/user/.ros/log/2026-03-08-15-59-56-552513-user-System-Product-Name-15760
+[INFO] [launch]: All log files can be found below /home/user/.ros/log/2026-03-08-15-59-56-552459-user-System-Product-Name-15758
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [loco_bridge-1]: process started with pid [15761]
+[INFO] [walking_policy_node-2]: process started with pid [15765]
+[INFO] [loco_bridge-1]: process started with pid [15763]
+[INFO] [walking_policy_node-2]: process started with pid [15767]
+[INFO] [loco_bridge-1]: process started with pid [15769]
+[INFO] [walking_policy_node-2]: process started with pid [15771]
+[walking_policy_node-2] [INFO] [1772953197.417798633] [robot1.walking_policy_node]: Loaded model: /home/user/booster_deploy/tasks/locomotion/models/k1_walk.pt
+[walking_policy_node-2] [INFO] [1772953197.427155336] [robot3.walking_policy_node]: Loaded model: /home/user/booster_deploy/tasks/locomotion/models/k1_walk.pt
+[walking_policy_node-2] [INFO] [1772953197.444439216] [robot2.walking_policy_node]: Loaded model: /home/user/booster_deploy/tasks/locomotion/models/k1_walk.pt
+[ERROR] [loco_bridge-1]: process has died [pid 15761, exit code -9, cmd '/home/user/Workspace/motion_program/install/motion/lib/motion/loco_bridge --ros-args -r __ns:=/robot2'].
+[ERROR] [loco_bridge-1]: process has died [pid 15763, exit code -9, cmd '/home/user/Workspace/motion_program/install/motion/lib/motion/loco_bridge --ros-args -r __ns:=/robot1'].
+[ERROR] [loco_bridge-1]: process has died [pid 15769, exit code -9, cmd '/home/user/Workspace/motion_program/install/motion/lib/motion/loco_bridge --ros-args -r __ns:=/robot3'].
+[ERROR] [walking_policy_node-2]: process has died [pid 15767, exit code -9, cmd '/home/user/Workspace/motion_program/install/motion/lib/motion/walking_policy_node --model /home/user/booster_deploy/tasks/locomotion/models/k1_walk.pt --device cpu --rate 50.0 --clip_action 0.0 --max_delta_per_step 0.0 --ros-args -r __ns:=/robot1'].
+[ERROR] [walking_policy_node-2]: process has died [pid 15771, exit code -9, cmd '/home/user/Workspace/motion_program/install/motion/lib/motion/walking_policy_node --model /home/user/booster_deploy/tasks/locomotion/models/k1_walk.pt --device cpu --rate 50.0 --clip_action 0.0 --max_delta_per_step 0.0 --ros-args -r __ns:=/robot3'].
+[ERROR] [walking_policy_node-2]: process has died [pid 15765, exit code -9, cmd '/home/user/Workspace/motion_program/install/motion/lib/motion/walking_policy_node --model /home/user/booster_deploy/tasks/locomotion/models/k1_walk.pt --device cpu --rate 50.0 --clip_action 0.0 --max_delta_per_step 0.0 --ros-args -r __ns:=/robot2'].
